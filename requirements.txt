@@ -1,2 +1,7 @@
 Django==5.2.18
 Pillow>=12.0
+
+# Render hosting and Aiven PostgreSQL
+gunicorn>=23,<24
+whitenoise>=6.8,<7
+psycopg[binary]>=3.2,<4

@@ -9,9 +9,22 @@ SECRET_KEY = os.environ.get(
     "local-development-only-do-not-use-online",
 )
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ON_RENDER = os.environ.get('RENDER', '').lower() == 'true'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False' if ON_RENDER else 'True').lower() == 'true'
+if ON_RENDER and (not os.environ.get('DJANGO_SECRET_KEY') or SECRET_KEY == 'local-development-only-do-not-use-online'):
+    raise RuntimeError('Set a new DJANGO_SECRET_KEY in Render Environment.')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
+if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
+    ALLOWED_HOSTS.append(os.environ['RENDER_EXTERNAL_HOSTNAME'])
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
+if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
+    CSRF_TRUSTED_ORIGINS.append('https://' + os.environ['RENDER_EXTERNAL_HOSTNAME'])
+if ON_RENDER:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -31,6 +44,7 @@ INSTALLED_APPS = [
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,6 +82,26 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+# Only Render uses Aiven. Local development retains SQLite above.
+if ON_RENDER:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ['DB_PORT'],
+            'NAME': os.environ['DB_NAME'],
+            'USER': os.environ['DB_USER'],
+            'PASSWORD': os.environ['DB_PASSWORD'],
+            'CONN_MAX_AGE': 60,
+            'CONN_HEALTH_CHECKS': True,
+            'OPTIONS': {
+                'sslmode': 'verify-full',
+                'sslrootcert': os.environ.get('DB_SSLROOTCERT', '/etc/secrets/aiven-ca.pem'),
+            },
+        }
+    }
 
 
 # Password validation
@@ -121,3 +155,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Use SkillServe's user model for accounts and authentication.
 AUTH_USER_MODEL = "accounts.User"
+
+# Collect application assets for Gunicorn/WhiteNoise on Render.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
