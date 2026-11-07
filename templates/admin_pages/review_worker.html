@@ -1,0 +1,6 @@
+{% extends 'admin_pages/base_admin.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/workers.css' %}">{% endblock %}
+{% block content %}<a class="back-to-feed" href="{% url 'worker_reviews' %}">← Worker verification</a><div class="profile-page-heading"><div><h1>{{ profile.full_name|default:profile.user.username }}</h1><p>Submission {{ profile.revision }} · {{ profile.user.username }}</p></div><span class="status-badge status-{{ profile.status }}">{{ profile.get_status_display }}</span></div>
+{% include 'workers/profile_details.html' %}
+<section class="panel profile-section"><h2>Verification decision</h2>{% if profile.status == 'pending' %}<form method="post" class="worker-profile-form">{% csrf_token %}{{ review_form.as_p }}<button type="submit" class="button">Save decision &amp; send feedback</button></form>{% else %}<p class="muted">This submission is {{ profile.get_status_display|lower }}. A new review becomes available when the worker resubmits their profile.</p>{{ review_form.non_field_errors }}{% endif %}</section>{% include 'workers/review_history.html' %}{% endblock %}

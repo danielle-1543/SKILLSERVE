@@ -1,0 +1,1 @@
+<span class="messenger-avatar" aria-hidden="true">{{ person.first_name|first|default:person.username|first|upper }}{{ person.last_name|first|upper }}{% if person.role == 'worker' %}<span class="worker-avatar-badge" title="Worker">⚒</span>{% endif %}</span>

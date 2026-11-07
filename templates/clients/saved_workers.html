@@ -1,0 +1,5 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/client_dashboard.css' %}">{% endblock %}
+{% block title %}Saved workers | SkillServe{% endblock %}
+{% block content %}<div class="section-heading"><div><span class="eyebrow">YOUR BOOKMARKS</span><h1>Saved workers</h1><p class="muted">Your bookmarked verified workers, ready when you need them.</p></div><a class="client-reset" href="{% url 'search_workers' %}">Find workers →</a></div>{% include 'clients/worker_cards.html' %}{% endblock %}

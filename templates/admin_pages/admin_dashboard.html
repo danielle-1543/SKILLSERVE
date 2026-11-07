@@ -1,0 +1,22 @@
+{% extends "admin_pages/base_admin.html" %}
+
+{% block content %}
+<section class="panel dashboard-panel">
+    <div class="section-heading">
+        <h2>Recent announcements</h2>
+
+        <a href="{% url 'CRUD_annoucements' %}">
+            Manage announcements
+        </a>
+    </div>
+
+    {% for post in recent_announcements %}
+        <div class="dashboard-row">
+            <strong>{{ post.title }}</strong>
+            <small>{{ post.created_at|date:"M j, Y" }}</small>
+        </div>
+    {% empty %}
+        <p class="muted">No announcements have been published yet.</p>
+    {% endfor %}
+</section>
+{% endblock %}

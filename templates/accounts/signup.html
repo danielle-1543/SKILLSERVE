@@ -1,0 +1,12 @@
+{% extends 'public/base.html' %}
+{% block title %}Sign up | SkillServe{% endblock %}
+{% block content %}
+<section class="signup-heading"><span class="eyebrow">BECOME PART OF YOUR COMMUNITY</span><h1>Find help. Offer your skills.</h1><p>Choose how you want to use SkillServe and create your account.</p></section>
+<section class="panel signup-card"><form method="post" class="modal-form signup-form">{% csrf_token %}
+{{ form.non_field_errors }}
+<fieldset class="account-choices"><legend>Choose your account type</legend>{{ form.role.errors }}
+{% for choice in form.role %}<label class="account-choice">{{ choice.tag }}<span><strong>{{ choice.choice_label }}</strong>{% if choice.data.value == 'worker' %}<small>I’m a skilled worker or freelancer looking for service opportunities.</small>{% else %}<small>I’m a resident or employer who needs to hire a service provider.</small>{% endif %}</span></label>{% endfor %}</fieldset>
+<div class="signup-fields">{% for field in form %}{% if field.name != 'role' %}<div class="signup-field">{{ field.label_tag }}{{ field.errors }}{{ field }}{% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}</div>{% endif %}{% endfor %}</div>
+<button class="button" type="submit">Create account →</button><p class="muted">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+</form></section>
+{% endblock %}

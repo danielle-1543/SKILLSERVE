@@ -1,0 +1,28 @@
+<div class="share-toast" id="share-status" role="status" aria-live="polite" hidden></div>
+<dialog class="crud-modal" id="share-fallback" aria-labelledby="share-title"><div class="modal-heading"><h2 id="share-title">Share announcement</h2><button class="modal-close" type="button" id="close-share">Close</button></div><div class="modal-body"><p>Your browser could not copy automatically. Select and copy this link:</p><input class="share-link-input" id="share-link" readonly aria-label="Announcement link"></div></dialog>
+<script>
+(() => {
+    const status = document.getElementById('share-status');
+    const fallback = document.getElementById('share-fallback');
+    const input = document.getElementById('share-link');
+    let timer;
+    document.getElementById('close-share').addEventListener('click', () => fallback.close());
+    document.addEventListener('click', async event => {
+        const button = event.target.closest('[data-share-url]');
+        if (!button) return;
+        const link = new URL(button.dataset.shareUrl, window.location.origin).href;
+        try {
+            await navigator.clipboard.writeText(link);
+            status.textContent = 'Link copied! Paste it to share this announcement.';
+            status.hidden = false;
+            clearTimeout(timer);
+            timer = setTimeout(() => {status.hidden = true;}, 4500);
+        } catch (error) {
+            input.value = link;
+            if (!fallback.open) fallback.showModal();
+            input.focus();
+            input.select();
+        }
+    });
+})();
+</script>

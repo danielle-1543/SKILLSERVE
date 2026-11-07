@@ -1,0 +1,69 @@
+{% extends 'workers/base.html' %}
+{% load static %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/skills_catalog.css' %}?v=service-cards-2">{% endblock %}
+{% block title %}Edit worker profile | SkillServe{% endblock %}
+{% block content %}
+<div class="profile-page-heading"><div><span class="eyebrow">WORKER ACCOUNT</span><h1>Edit profile</h1><p>Tell clients what you can do and where you work.</p></div><span class="status-badge status-{{ profile.status }}">{{ profile.get_status_display }}</span></div>
+{% for review in reviews %}<aside class="review-notice"><strong>Administrator feedback · {{ review.get_decision_display }}</strong><p>{{ review.feedback|linebreaksbr }}</p><small>{{ review.created_at|date:'M j, Y · g:i A' }} · Submission {{ review.revision }}</small></aside>{% endfor %}
+<form method="post" enctype="multipart/form-data" class="worker-profile-form">{% csrf_token %}<input type="hidden" name="revision" value="{{ profile.revision }}">{{ form.non_field_errors }}
+<section class="panel profile-section"><div class="profile-section-heading"><span class="section-number">01</span><div><h2>Basic information</h2><p>Introduce yourself and the work you do.</p></div></div><div class="profile-fields">{% for field in form %}{% if field.name != 'skills' and field.name != 'certifications' and field.name != 'service_types' %}<div class="profile-field {% if field.name == 'about' %}full-width{% endif %}">{{ field.label_tag }}{{ field.errors }}{{ field }}</div>{% endif %}{% endfor %}</div></section>
+<section class="panel profile-section service-types-editor"><div class="profile-section-heading"><span class="section-number">02</span><div><h2>Types of Service</h2><p>Choose up to 5 broad types. Add the specific tasks and rates under Services Offered below.</p></div></div><label for="service-type-filter">Find a service type</label><input id="service-type-filter" type="search" placeholder="Search service types" autocomplete="off"><div class="service-types-options">{{ form.service_types.errors }}{{ form.service_types }}</div><p id="service-type-count" role="status"></p></section>
+{% for section in sections %}<section class="panel profile-section formset-section" data-prefix="{{ section.prefix }}"><div class="profile-section-heading"><span class="section-number">0{{ forloop.counter|add:1 }}</span><div><h2>{{ section.title }}</h2>{% if section.prefix == 'services' %}<p>Write each service in your own words and link it to a selected type. Use PHP starting rates. Existing unlinked services need a type before submitting.</p>{% elif section.prefix == 'evidence' %}<p>Upload certification documents, images, or videos as proof. PDF, JPG, PNG, WebP, MP4, WebM · up to 25 MB each · up to 10 files. Files are private.</p>{% else %}<p>Optional — add the experience or training relevant to your services.</p>{% endif %}</div></div>{{ section.formset.management_form }}{{ section.formset.non_form_errors }}
+{% if section.prefix == 'services' %}<div class="offered-service-cards"></div><p class="offered-service-message" role="status"></p>{% endif %}<div class="formset-rows">{% for row in section.formset %}{% include 'workers/formset_row.html' %}{% endfor %}</div>
+<template class="empty-form">{% with row=section.formset.empty_form %}{% include 'workers/formset_row.html' %}{% endwith %}</template><button class="add-row-button" type="button">＋ {{ section.add_label }}</button></section>{% endfor %}
+<section class="panel profile-section"><div class="profile-section-heading"><span class="section-number">06</span><div><h2>Additional qualifications</h2><p>Optional certification summary. Supporting files are uploaded above.</p></div></div><div class="profile-fields"><div class="profile-field">{{ form.certifications.label_tag }}{{ form.certifications.errors }}{{ form.certifications }}</div></div></section>
+<div class="profile-submit-bar"><p>Saving submits your profile to an administrator for verification. Updates require a new review.</p><div><a class="button secondary" href="{% url 'worker_profile' %}">Cancel</a><button class="button" type="submit">Save profile &amp; submit for review →</button></div></div></form>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/worker_services.js' %}?v=2" defer></script><script>
+document.querySelectorAll('.formset-section').forEach(section => {
+    if (section.dataset.prefix === 'services') return;
+    const total = section.querySelector('[name$="-TOTAL_FORMS"]');
+    const maximum = Number(section.querySelector('[name$="-MAX_NUM_FORMS"]').value);
+    const rows = section.querySelector('.formset-rows');
+    section.querySelector('.add-row-button').addEventListener('click', () => {
+        const index = Number(total.value);
+        if (index >= maximum) { alert('You have reached the maximum number of rows for this section.'); return; }
+        rows.insertAdjacentHTML('beforeend', section.querySelector('template').innerHTML.replaceAll('__prefix__', index));
+        total.value = index + 1;
+        section.dispatchEvent(new Event('services-ready', {bubbles:true}));
+        rows.lastElementChild.querySelector('input:not([type="hidden"]):not([type="checkbox"]),textarea')?.focus();
+    });
+    section.addEventListener('click', event => {
+        const button = event.target.closest('.remove-row-button');
+        if (!button) return;
+        const row = button.closest('.formset-row');
+        row.querySelector('[name$="-DELETE"]').checked = true;
+        row.hidden = true;
+        row.querySelectorAll('input,select,textarea').forEach(field => field.required = false);
+    });
+    section.dispatchEvent(new Event('services-ready', {bubbles:true}));
+    rows.querySelectorAll('.formset-row').forEach(row => {
+        if (row.querySelector('[name$="-DELETE"]').checked) row.hidden = true;
+    });
+});
+document.addEventListener('change', event => {
+    const input = event.target;
+    if (!input.matches('.formset-section input[type="file"]')) return;
+    const container = input.closest('.formset-row').querySelector('.new-proof-preview');
+    if (container.dataset.url) URL.revokeObjectURL(container.dataset.url);
+    container.replaceChildren();
+    const file = input.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    container.dataset.url = url;
+    const extension = file.name.split('.').pop().toLowerCase();
+    let preview;
+    if (['jpg','jpeg','png','webp'].includes(extension)) {
+        preview = document.createElement('img'); preview.className = 'proof-image'; preview.alt = 'Selected proof preview';
+    } else if (['mp4','webm'].includes(extension)) {
+        preview = document.createElement('video'); preview.className = 'proof-video'; preview.controls = true;
+    } else if (extension === 'pdf') {
+        preview = document.createElement('iframe'); preview.className = 'proof-document'; preview.title = 'Selected PDF preview';
+    }
+    if (!preview) return;
+    const figure = document.createElement('figure'); figure.className = 'proof-preview';
+    const caption = document.createElement('figcaption'); caption.textContent = 'Selected file: ' + file.name;
+    preview.src = url;
+    figure.append(caption, preview); container.append(figure);
+});
+</script>{% endblock %}

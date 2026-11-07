@@ -1,0 +1,338 @@
+{% extends "admin_pages/base_admin.html" %}
+
+{% block content %}
+
+<form class="feed-toolbar" method="get">
+    <input type="hidden" name="category" value="{{ selected_category }}">
+    <label>From <input type="date" name="start" value="{{ start_date }}"></label>
+    <label>To <input type="date" name="end" value="{{ end_date }}"></label>
+    <label>Sort by <select name="sort"><option value="newest">Newest first</option><option value="oldest" {% if selected_sort == 'oldest' %}selected{% endif %}>Oldest first</option></select></label>
+    <button class="button secondary" type="submit">Apply</button>
+    <a href="{% url 'CRUD_annoucements' %}">Reset</a>
+</form>
+<div class="crud-layout">
+    <aside class="category-panel">
+        <h2>Category <span>PESO</span></h2>
+        <a class="category-link {% if not selected_category %}active{% endif %}" href="?sort={{ selected_sort }}&amp;start={{ start_date }}&amp;end={{ end_date }}">All announcements <b>{{ total_posts }}</b></a>
+        {% for category in categories %}
+        <a class="category-link {% if selected_category == category.value %}active{% endif %}" href="?category={{ category.value }}&amp;sort={{ selected_sort }}&amp;start={{ start_date }}&amp;end={{ end_date }}">{{ category.label }} <span>{{ category.count }}</span></a>
+        {% endfor %}
+    </aside>
+    <!-- ANNOUNCEMENT FEED -->
+    <section class="timeline" aria-label="Announcement feed">
+        <div class="composer panel">
+            <div class="composer-row"><span class="avatar">{{ request.user.username|first|upper }}</span><button type="button" class="compose-trigger" data-open-modal="create-modal">Create announcement</button></div>
+            <div class="composer-options"><button type="button" data-open-modal="create-modal"><span class="green">▧</span> Photo</button><span class="composer-hint">Share news with your community</span><button class="button secondary" type="button" data-open-modal="create-modal">＋ Create post</button></div>
+        </div>
+
+        {% for row in announcement_rows %}
+            <article class="post-card panel">
+                <header class="post-header">
+                    <span class="avatar" aria-hidden="true">
+                        {{ row.post.author.username|first|upper }}
+                    </span>
+
+                    <div>
+                        <strong>
+                            {{ row.post.author.get_full_name|default:row.post.author.username }}
+                        </strong>
+
+                        <small>
+                            {{ row.post.created_at|date:"M j, Y · g:i A" }}
+                        </small>
+                    </div>
+
+                    <div class="post-tools">
+                    <form method="post">{% csrf_token %}<input type="hidden" name="action" value="pin"><input type="hidden" name="announcement_id" value="{{ row.post.pk }}"><button class="pin-button" type="submit" aria-label="{% if row.post.is_pinned %}Unpin{% else %}Pin{% endif %} announcement">{% if row.post.is_pinned %}⌁ Pinned{% else %}⌁ Pin{% endif %}</button></form>
+                    <details class="post-menu"><summary aria-label="Post options">•••</summary><div><button type="button" data-open-modal="edit-modal-{{ row.post.pk }}">Edit announcement</button><button type="button" data-open-modal="delete-modal-{{ row.post.pk }}">Delete announcement</button></div></details>
+                    </div>
+                </header>
+
+                <div class="post-content">
+                    <span class="category-label">
+                        {{ row.post.get_category_display }}
+                    </span>
+
+                    <h2>{{ row.post.title }}</h2>
+
+                    <p>{{ row.post.body|truncatechars:220|linebreaksbr }}</p>
+                </div>
+
+                {% if row.post.photo %}
+                    <img
+                        class="post-image"
+                        src="{{ row.post.photo.url }}"
+                        alt="Photo for {{ row.post.title }}"
+                        loading="lazy"
+                    >
+                {% endif %}
+
+                <!-- All actions open a modal on this page. -->
+                <footer class="post-actions">
+                    <span class="post-source">PESO · Community update</span>
+                    <button class="text-button" type="button" data-open-modal="view-modal-{{ row.post.pk }}">▤ View full post</button>
+                </footer>
+            </article>
+        {% empty %}
+            <div class="panel empty-state">
+                <h2>No announcements yet</h2>
+                <p>Create your first announcement to begin.</p>
+            </div>
+        {% endfor %}
+
+    </section>
+
+    <!-- PINNED ANNOUNCEMENTS -->
+    <aside class="pinned-panel panel">
+        <h2>Pinned announcements <span>⌁</span></h2>
+
+        {% for post in pinned_posts %}
+            <article class="pinned-item">
+                <div class="pinned-author"><span class="avatar small">{{ post.author.username|first|upper }}</span><strong>{{ post.author.get_full_name|default:post.author.username }}</strong><span class="pinned-label">⌁ Pinned</span></div><small class="category-label">{{ post.get_category_display }}</small>
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.body|truncatechars:90 }}</p>
+
+                <button
+                    class="button secondary"
+                    type="button"
+                    data-open-modal="view-modal-{{ post.pk }}"
+                >
+                    View post
+                </button>
+            </article>
+        {% empty %}
+            <p class="muted">No pinned announcements.</p>
+        {% endfor %}
+    </aside>
+
+</div>
+
+
+<!-- CREATE MODAL -->
+<dialog
+    class="crud-modal"
+    id="create-modal"
+    aria-labelledby="create-modal-title"
+>
+    <div class="modal-heading">
+        <h2 id="create-modal-title">Create announcement</h2>
+
+        <button class="modal-close" type="button" data-close-modal>
+            Close
+        </button>
+    </div>
+
+    <form
+        class="modal-form"
+        method="post"
+        action="{% url 'CRUD_annoucements' %}"
+        enctype="multipart/form-data"
+    >
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+
+        <!-- Django displays labels, inputs, and validation errors. -->
+        {{ create_form.as_p }}
+
+        <div class="modal-actions">
+            <button
+                class="button secondary"
+                type="button"
+                data-close-modal
+            >
+                Cancel
+            </button>
+
+            <button class="button" type="submit">
+                Publish announcement
+            </button>
+        </div>
+    </form>
+</dialog>
+
+
+{% for row in announcement_rows %}
+
+    <!-- VIEW MODAL: displays the complete announcement. -->
+    <dialog
+        class="crud-modal"
+        id="view-modal-{{ row.post.pk }}"
+        aria-labelledby="view-title-{{ row.post.pk }}"
+    >
+        <div class="modal-heading">
+            <h2 id="view-title-{{ row.post.pk }}">
+                {{ row.post.title }}
+            </h2>
+
+            <button class="modal-close" type="button" data-close-modal>
+                Close
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <span class="category-label">
+                {{ row.post.get_category_display }}
+            </span>
+
+            <p class="muted">
+                {{ row.post.author.get_full_name|default:row.post.author.username }}
+                · {{ row.post.created_at|date:"M j, Y · g:i A" }}
+            </p>
+
+            <p>{{ row.post.body|linebreaksbr }}</p>
+
+            {% if row.post.photo %}
+                <img
+                    class="post-image"
+                    src="{{ row.post.photo.url }}"
+                    alt="Photo for {{ row.post.title }}"
+                    loading="lazy"
+                >
+            {% endif %}
+        </div>
+    </dialog>
+
+
+    <!-- EDIT MODAL: the form is already filled with saved values. -->
+    <dialog
+        class="crud-modal"
+        id="edit-modal-{{ row.post.pk }}"
+        aria-labelledby="edit-title-{{ row.post.pk }}"
+    >
+        <div class="modal-heading">
+            <h2 id="edit-title-{{ row.post.pk }}">
+                Edit announcement
+            </h2>
+
+            <button class="modal-close" type="button" data-close-modal>
+                Close
+            </button>
+        </div>
+
+        <form
+            class="modal-form"
+            method="post"
+            action="{% url 'CRUD_annoucements' %}"
+            enctype="multipart/form-data"
+        >
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit">
+            <input
+                type="hidden"
+                name="announcement_id"
+                value="{{ row.post.pk }}"
+            >
+
+            {{ row.edit_form.as_p }}
+
+            <div class="modal-actions">
+                <button
+                    class="button secondary"
+                    type="button"
+                    data-close-modal
+                >
+                    Cancel
+                </button>
+
+                <button class="button" type="submit">
+                    Save changes
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+
+    <!-- DELETE MODAL: confirmation is required before deleting. -->
+    <dialog
+        class="crud-modal"
+        id="delete-modal-{{ row.post.pk }}"
+        aria-labelledby="delete-title-{{ row.post.pk }}"
+    >
+        <div class="modal-heading">
+            <h2 id="delete-title-{{ row.post.pk }}">
+                Delete announcement?
+            </h2>
+
+            <button class="modal-close" type="button" data-close-modal>
+                Close
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <p>
+                Delete <strong>{{ row.post.title }}</strong>?
+                This action cannot be undone.
+            </p>
+
+            <form method="post" action="{% url 'CRUD_annoucements' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input
+                    type="hidden"
+                    name="announcement_id"
+                    value="{{ row.post.pk }}"
+                >
+
+                <div class="modal-actions">
+                    <button
+                        class="button secondary"
+                        type="button"
+                        data-close-modal
+                    >
+                        Cancel
+                    </button>
+
+                    <button class="button danger" type="submit">
+                        Delete announcement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+{% endfor %}
+{% for post in extra_pinned_posts %}
+<dialog class="crud-modal" id="view-modal-{{ post.pk }}" aria-label="{{ post.title }}"><div class="modal-heading"><h2>{{ post.title }}</h2><button class="modal-close" type="button" data-close-modal>Close</button></div><div class="modal-body"><span class="category-label">{{ post.get_category_display }}</span><p>{{ post.body|linebreaksbr }}</p>{% if post.photo %}<img class="post-image" src="{{ post.photo.url }}" alt="{{ post.title }}">{% endif %}</div></dialog>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<!-- Safely pass the modal ID selected by the Django view. -->
+{{ open_modal|json_script:"open-modal-id" }}
+
+<script>
+    // One listener handles all modal-opening and closing buttons.
+    document.addEventListener('click', function (event) {
+        const openButton = event.target.closest('[data-open-modal]');
+
+        if (openButton) {
+            const modal = document.getElementById(
+                openButton.dataset.openModal
+            );
+
+            if (modal && !modal.open) {
+                modal.showModal();
+            }
+        }
+
+        const closeButton = event.target.closest('[data-close-modal]');
+
+        if (closeButton) {
+            closeButton.closest('dialog').close();
+        }
+    });
+
+    // Invalid submissions return to the same modal with field errors.
+    const modalId = JSON.parse(
+        document.getElementById('open-modal-id').textContent
+    );
+
+    if (modalId) {
+        const modal = document.getElementById(modalId);
+
+        if (modal) {
+            modal.showModal();
+        }
+    }
+</script>
+{% endblock %}

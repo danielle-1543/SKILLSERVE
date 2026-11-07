@@ -1,0 +1,282 @@
+[
+  {
+    "name": "Housekeeping / House Cleaning",
+    "specialties": [
+      "General cleaning",
+      "Deep cleaning",
+      "Bathroom cleaning"
+    ]
+  },
+  {
+    "name": "Laundry / Labada",
+    "specialties": [
+      "Hand washing",
+      "Machine washing",
+      "Ironing"
+    ]
+  },
+  {
+    "name": "Household Helper / Kasambahay",
+    "specialties": [
+      "Household chores",
+      "Meal preparation",
+      "Errands"
+    ]
+  },
+  {
+    "name": "Babysitting / Childcare",
+    "specialties": [
+      "Child supervision",
+      "Feeding assistance",
+      "After-school care"
+    ]
+  },
+  {
+    "name": "Elderly Assistance",
+    "specialties": [
+      "Companionship",
+      "Meal assistance",
+      "Daily living assistance"
+    ]
+  },
+  {
+    "name": "Plumbing / Tubero",
+    "specialties": [
+      "Leak repair",
+      "Drain unclogging",
+      "Faucet installation"
+    ]
+  },
+  {
+    "name": "Electrical Services",
+    "specialties": [
+      "Wiring repair",
+      "Outlet installation",
+      "Lighting installation"
+    ]
+  },
+  {
+    "name": "Carpentry / Karpintero",
+    "specialties": [
+      "Cabinet making",
+      "Furniture repair",
+      "Door installation"
+    ]
+  },
+  {
+    "name": "Masonry / Pagmamason",
+    "specialties": [
+      "Concrete work",
+      "Plastering",
+      "Hollow-block laying"
+    ]
+  },
+  {
+    "name": "Construction Helper",
+    "specialties": [
+      "Material carrying",
+      "Site cleanup",
+      "Assisting tradespeople"
+    ]
+  },
+  {
+    "name": "Painting / Pintor",
+    "specialties": [
+      "Wall painting",
+      "Roof painting",
+      "Surface preparation"
+    ]
+  },
+  {
+    "name": "Welding / Welder",
+    "specialties": [
+      "Gate fabrication",
+      "Metal repairs",
+      "Window grills"
+    ]
+  },
+  {
+    "name": "Gardening / Paghahalaman",
+    "specialties": [
+      "Grass cutting",
+      "Planting",
+      "Garden cleanup"
+    ]
+  },
+  {
+    "name": "Farm Work / Trabahong Bukid",
+    "specialties": [
+      "Planting",
+      "Harvesting",
+      "Farm maintenance"
+    ]
+  },
+  {
+    "name": "Fishing and Fishpond Work",
+    "specialties": [
+      "Fishing assistance",
+      "Net repair",
+      "Fishpond upkeep"
+    ]
+  },
+  {
+    "name": "Cooking / Pagluluto",
+    "specialties": [
+      "Home cooking",
+      "Packed meals",
+      "Food preparation"
+    ]
+  },
+  {
+    "name": "Baking",
+    "specialties": [
+      "Bread making",
+      "Pastries",
+      "Cake decoration"
+    ]
+  },
+  {
+    "name": "Catering and Event Assistance",
+    "specialties": [
+      "Food serving",
+      "Setup",
+      "Event cleanup"
+    ]
+  },
+  {
+    "name": "Kitchen Helper / Dishwasher",
+    "specialties": [
+      "Ingredient preparation",
+      "Dishwashing",
+      "Kitchen cleaning"
+    ]
+  },
+  {
+    "name": "Store and Market Assistance",
+    "specialties": [
+      "Cashiering",
+      "Arranging stock",
+      "Customer assistance"
+    ]
+  },
+  {
+    "name": "Delivery and Errands",
+    "specialties": [
+      "Parcel delivery",
+      "Grocery pickup",
+      "Document delivery"
+    ]
+  },
+  {
+    "name": "Moving / Kargador",
+    "specialties": [
+      "Loading",
+      "Unloading",
+      "Packing"
+    ]
+  },
+  {
+    "name": "Driving",
+    "specialties": [
+      "Family driving",
+      "Delivery driving",
+      "Passenger transport"
+    ]
+  },
+  {
+    "name": "Vehicle Cleaning",
+    "specialties": [
+      "Car washing",
+      "Motorcycle washing",
+      "Interior cleaning"
+    ]
+  },
+  {
+    "name": "Motorcycle and Vehicle Repair",
+    "specialties": [
+      "Basic maintenance",
+      "Tire repair",
+      "Mechanical troubleshooting"
+    ]
+  },
+  {
+    "name": "Appliance Repair",
+    "specialties": [
+      "Washing machines",
+      "Refrigerators",
+      "Electric fans"
+    ]
+  },
+  {
+    "name": "Aircon Services",
+    "specialties": [
+      "Cleaning",
+      "Installation",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "name": "Sewing / Pananahi",
+    "specialties": [
+      "Clothing repairs",
+      "Alterations",
+      "Uniform sewing"
+    ]
+  },
+  {
+    "name": "Barbering and Hair Services",
+    "specialties": [
+      "Haircuts",
+      "Hairstyling",
+      "Hair coloring"
+    ]
+  },
+  {
+    "name": "Nail and Makeup Services",
+    "specialties": [
+      "Manicure",
+      "Pedicure",
+      "Makeup"
+    ]
+  },
+  {
+    "name": "Pet Care",
+    "specialties": [
+      "Pet sitting",
+      "Dog walking",
+      "Grooming"
+    ]
+  },
+  {
+    "name": "Tutoring",
+    "specialties": [
+      "Reading",
+      "Mathematics",
+      "Homework assistance"
+    ]
+  },
+  {
+    "name": "Warehouse and Packing",
+    "specialties": [
+      "Sorting goods",
+      "Packing orders",
+      "Stock handling"
+    ]
+  },
+  {
+    "name": "Hotel and Resort Assistance",
+    "specialties": [
+      "Room cleaning",
+      "Guest assistance",
+      "Housekeeping"
+    ]
+  },
+  {
+    "name": "Specialized Local Repairs",
+    "specialties": [
+      "Shoe repair",
+      "Bag repair",
+      "Umbrella repair"
+    ]
+  }
+]

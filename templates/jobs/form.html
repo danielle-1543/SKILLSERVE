@@ -1,0 +1,3 @@
+{% extends 'jobs/base.html' %}
+{% block title %}Post a job offer | SkillServe{% endblock %}
+{% block content %}<div class="job-form panel"><span class="eyebrow">FIND LOCAL HELP</span><h1>Post a job offer</h1><p>Workers can see these details and comments. Share only a general location; arrange private details through Messages. Times use Philippine time.</p><form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<div class="job-actions"><a href="{% url 'job_offers' %}">Cancel</a><button class="button">Publish job offer</button></div></form></div>{% endblock %}

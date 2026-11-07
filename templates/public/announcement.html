@@ -1,0 +1,5 @@
+{% extends 'public/dashboard.html' %}
+{% block title %}{{ post.title }} | PESO{% endblock %}
+{% block content %}
+<div class="single-announcement"><a class="back-to-feed" href="{% url 'landing' %}?category={{ post.category }}#announcements">← Back to PESO announcements</a><article class="panel post-card"><header class="post-header"><span class="avatar">{{ post.author.username|first|upper }}</span><div><strong>{{ post.author.get_full_name|default:post.author.username }}</strong><small>PESO · {{ post.created_at|date:'M j, Y · g:i A' }}</small></div>{% if post.is_pinned %}<span class="pinned-label">Pinned</span>{% endif %}</header><div class="post-content"><span class="category-label">{{ post.get_category_display }}</span><h1>{{ post.title }}</h1><p>{{ post.body|linebreaksbr }}</p></div>{% if post.photo %}<img class="post-image" src="{{ post.photo.url }}" alt="{{ post.title }}">{% endif %}<footer class="post-actions"><span class="post-source">PESO · Community update</span><button type="button" class="share-button" data-share-url="{% url 'public_announcement' post.pk %}">↗ Share</button></footer></article></div>
+{% endblock %}

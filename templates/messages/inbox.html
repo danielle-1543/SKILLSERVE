@@ -1,0 +1,6 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}Messages | SkillServe{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/messaging.css' %}">{% endblock %}
+{% block content %}<div class="messenger-shell inbox-only">{% include 'messages/sidebar.html' %}<section class="messenger-welcome"><span class="welcome-chat-icon" aria-hidden="true">☏</span><h2>Your conversations, all in one place.</h2><p>Choose a chat to discuss services, ask questions, and connect with your community.</p>{% if request.user.role == 'client' %}<a class="button" href="{% url 'search_workers' %}">Find someone to message →</a>{% endif %}</section></div>{% endblock %}
+{% block scripts %}<script src="{% static 'js/messaging.js' %}" defer></script>{% endblock %}

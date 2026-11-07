@@ -1,0 +1,24 @@
+{% extends 'public/base.html' %}
+{% load static %}
+{% block title %}SkillServe | Employment services{% endblock %}
+{% block content %}
+<section class="public-welcome peso-hero skillserve-hero">
+<div><span class="eyebrow">LOCAL SKILLS. SHARED OPPORTUNITIES.</span><h1>Need a service?<br>Have a skill?</h1><p>A platform for both sides of your community. Residents and employers can connect with local service providers, while skilled workers and freelancers can find opportunities to put their talents to work.</p><div class="hero-actions">{% if request.user.is_authenticated %}<a class="button" href="{% url 'skillserve_dashboard' %}">My dashboard →</a>{% else %}<button class="button" type="button" data-login-trigger>Log in or sign up →</button>{% endif %}<a class="hero-secondary" href="#how-it-works">See how it works ↓</a></div></div>
+<div class="hero-mark"><img class="hero-logo" src="{% static 'images/skillserve-emblem.png' %}" alt="SkillServe employment link emblem" width="280" height="280" fetchpriority="high"></div>
+</section>
+<section class="skillserve-about" id="about"><div><span class="eyebrow">ABOUT SKILLSERVE</span><h2>A place for talent<br>and opportunity to meet.</h2></div><div><p>Whether you need help with a job or want to offer your skills, SkillServe is being developed for you. Clients and employers will be able to discover local talent, while workers and freelancers can present their services, skills, and experience.</p><p class="placeholder-note">{INSERT DETAILS LATER} Add your official introduction, mission, and community information here.</p></div></section>
+<section class="audience-grid" aria-label="Who SkillServe is for">
+<article class="panel audience-card client-card"><span class="eyebrow">FOR RESIDENTS &amp; EMPLOYERS</span><h2>Find the help you need.</h2><p>Need a local service provider? Join as a client to connect with skilled people in your community.</p><a class="button" href="{% url 'signup' %}?role=client">Join as a client →</a></article>
+<article class="panel audience-card worker-card"><span class="eyebrow">FOR WORKERS &amp; FREELANCERS</span><h2>Let your skills open doors.</h2><p>Offer a service or work independently? Join as a worker to showcase your skills and connect with potential clients.</p><a class="button" href="{% url 'signup' %}?role=worker">Join as a worker →</a></article>
+</section>
+<section class="how-section" id="how-it-works"><div class="section-heading"><div><span class="eyebrow">A SIMPLE START</span><h2>How SkillServe works</h2><p class="muted">A preview of the planned experience. Details will be updated as features are built.</p></div></div>
+<div class="steps-grid">
+<article class="step-card"><span class="step-number">01</span><span class="step-kicker">GET STARTED</span><h3>Create your profile</h3><p>Introduce yourself as a client or a worker and share the information needed to get started.</p><p class="placeholder-note">{INSERT DETAILS LATER} Registration and verification steps.</p></article>
+<article class="step-card"><span class="step-number">02</span><span class="step-kicker">FIND YOUR MATCH</span><h3>Explore skills &amp; services</h3><p>Clients will be able to explore worker profiles, while workers can showcase their experience and services.</p><p class="placeholder-note">{INSERT DETAILS LATER} Search and profile details.</p></article>
+<article class="step-card"><span class="step-number">03</span><span class="step-kicker">CONNECT &amp; COLLABORATE</span><h3>Discuss the job</h3><p>The planned booking flow will help clients and workers discuss service details and arrange work.</p><p class="placeholder-note">{INSERT DETAILS LATER} Messaging, bookings, and service completion.</p></article>
+</div></section>
+<section class="skillserve-callout"><div><span class="eyebrow">STAY CONNECTED</span><h2>Your community has something to offer.</h2><p>Sign in to your account, or keep up with the latest PESO updates.</p></div><a class="button" href="{% url 'landing' %}#announcements">Explore PESO announcements →</a></section>
+{% include 'accounts/member_login_modal.html' %}
+{% endblock %}
+{% block footer %}<footer class="peso-footer skillserve-footer"><div><a class="brand logo-brand" href="{% url 'skillserve_landing' %}"><img src="{% static 'images/skillserve-emblem.png' %}" alt="SkillServe logo" width="46" height="46"><span>SkillServe</span></a><p>Local skills. Shared opportunities.</p></div><div><h2>Learn more</h2><a href="#about">About SkillServe</a><p><a href="#how-it-works">How it works</a></p></div><a href="{% url 'landing' %}">PESO home →</a></footer>{% endblock %}
+{% block scripts %}<script src="{% static 'js/member_login.js' %}" defer></script>{{ open_login|default:False|json_script:'open-member-login' }}{% endblock %}
